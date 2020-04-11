@@ -11,14 +11,14 @@ type Recieve struct {
 	productId string
 }
 
-func NewRecieve(productId string) *Recieve{
+func NewRecieve(productId string) *Recieve {
 	process := &Recieve{
 		productId: productId,
 	}
 	return process
 }
 
-func (p *Recieve)OnProccess(message *mqengine.Message) {
+func (p *Recieve) OnProccess(message *mqengine.Message) {
 	logger.Info("to do",
 		zap.ByteString("body", message.Body))
 	message.CorrelationDelivery.Ack(false)

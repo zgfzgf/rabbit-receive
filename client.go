@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/zgfzgf/rabbitmq/mqengine"
 	"go.uber.org/zap"
 )
@@ -14,7 +15,6 @@ type Client struct {
 	// 用于读取消息
 	readerHandle *mqengine.RabbitMq
 	readerChan   chan *mqengine.Message
-
 }
 
 func NewClient(productId string, reader *mqengine.RabbitMq) *Client {
@@ -27,12 +27,11 @@ func NewClient(productId string, reader *mqengine.RabbitMq) *Client {
 	return e
 }
 
-func (e *Client) Start() {
+func (e *Client) Start(ctx context.Context) {
 	if err := recover(); err != nil {
 		logger.Error("recover", zap.Error(err.(error)))
 	}
-	e.readerHandle.RegisterReceiver(e)
-	go e.readerHandle.Start()
+	go e.readerHandle.Reader(ctx, e)
 	go e.runApplier()
 
 }
@@ -46,10 +45,6 @@ func (e *Client) runApplier() {
 	}
 }
 
-
-func (e *Client) Consumer() chan<- *mqengine.Message {
+func (e *Client) Reader() chan<- *mqengine.Message {
 	return e.readerChan
 }
-
-
-

@@ -1,10 +1,13 @@
 package main
 
-import "github.com/zgfzgf/rabbitmq/mqengine"
+import (
+	"context"
+	"github.com/zgfzgf/rabbitmq/mqengine"
+)
 
-func StartClient() {
+func StartClient(ctx context.Context) {
 	productId := "aaa"
 	readMq := mqengine.NewReaderMQ(productId)
 	send := NewClient(productId, readMq)
-	send.Start()
+	send.Start(ctx)
 }

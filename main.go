@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"github.com/zgfzgf/rabbitmq/mqengine"
 	"go.uber.org/zap"
 	"os"
+	"os/signal"
 )
 
 var config *mqengine.GbeConfig
@@ -13,10 +15,11 @@ func main() {
 	config = mqengine.GetConfig("./receive.json")
 	logger = mqengine.GetLog()
 	defer logger.Sync()
-	StartClient()
-	//for i:=0; i<1000000; i++{
-	//	logger.Info("log 初始化成功")
-	//}
+	ctx, cancel := context.WithCancel(context.Background())
+	StartClient(ctx)
+
 	c := make(chan os.Signal)
+	signal.Notify(c)
 	<-c
+	cancel()
 }
